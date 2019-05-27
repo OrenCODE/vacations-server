@@ -50,6 +50,16 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    const [results] = await pool.execute(`DELETE FROM vacations WHERE id = ?`, [id]);
+    if (results.affectedRows) {
+        res.status(200).send({ success: true });
+    } else {
+        res.status(404).send({ success: false });
+    }
+});
+
 router.post('/', async (req, res) => {
     const {
         description,
@@ -86,5 +96,17 @@ router.post('/', async (req, res) => {
             .send('something went wrong');
     }
 });
+
+router.put('/:id',
+    async (req, res) => {
+        const {description} = req.body;
+        const {id} = req.params;
+        try {
+            const [results] = await pool.execute(`UPDATE Vacations SET vacations_description = '${description}' WHERE id = ?`, [id]);
+            res.send(`vacation ${req.params.id} has been updated`);
+        } catch (error) {
+            console.log(error)
+        }
+    });
 
 module.exports = router;
